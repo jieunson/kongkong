@@ -1,0 +1,871 @@
+import numpy as np
+import matplotlib.pyplot as plt
+#import tensorflow as tf
+import scipy.stats as stats
+import pandas as pd
+from itertools import combinations
+import statsmodels.api as sm
+from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.cross_validation import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+###########data가져오기
+dataset = pd.read_csv('C:/Users/SDS/Documents/test/origindataforbrightics.csv',sep=',',header=0,skip_blank_lines=True)
+df = pd.DataFrame.dropna(dataset, axis=0, how='any')
+df
+###########data를 train과 test로 나누기
+df_train=df.sample(frac=0.8,random_state=200)
+df_test=df.drop(df_train.index)
+print(df_test.shape)
+print(df_train.shape)
+
+#OUTPUT___train통 df_train
+#OUTPUT___test통 df_test
+##################################################################################RF1
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP','L1_Direction', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L1_Direction']]
+#print(train_x)
+#print(train_y)
+###########Test dataset 구성
+
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP','L1_Direction', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+test_y= df_test[['L1_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF1
+#모델링
+rclf1 = RandomForestClassifier(n_estimators=12)
+rclf1.fit(train_x, train_y)
+
+#예측
+pred1 = rclf1.predict(test_x).reshape(-1, 1)
+f1 = []
+for i1 in range(len(pred1)):
+    f1.append(pred1[i1,0])
+
+#예측정확도
+act1 = test_y.values[:, -1]
+act1=act1.reshape(-1, 1)
+acc1 = np.equal(act1, pred1)
+n_count1 = 0
+for i in range(220):
+    if acc1[i] == True:
+        n_count1 = n_count1 + 1
+accuracy1 = n_count1/220*100
+accuracy1
+
+
+##################################################################################RF2
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L2_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+#train_Y변수
+test_y= df_test[['L2_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF2
+#모델링
+rclf2 = RandomForestClassifier(n_estimators=12)
+rclf2.fit(train_x, train_y)
+
+#예측
+pred2 = rclf2.predict(test_x).reshape(-1, 1)
+f2 = []
+for i2 in range(len(pred2)):
+    f2.append(pred2[i2,0])
+
+#예측정확도
+act2 = test_y.values[:, -1]
+act2=act2.reshape(-1, 1)
+acc2 = np.equal(act2, pred2)
+n_count2 = 0
+for i in range(220):
+    if acc2[i] == True:
+        n_count2 = n_count2 + 1
+accuracy2 = n_count2/220*100
+accuracy2
+
+
+
+##################################################################################RF3
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L3_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+#train_Y변수
+test_y= df_test[['L3_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF3
+#모델링
+rclf3 = RandomForestClassifier(n_estimators=12)
+rclf3.fit(train_x, train_y)
+
+#예측
+pred3 = rclf3.predict(test_x).reshape(-1, 1)
+f3 = []
+for i3 in range(len(pred3)):
+    f3.append(pred3[i3,0])
+
+#예측정확도
+act3 = test_y.values[:, -1]
+act3=act3.reshape(-1, 1)
+acc3 = np.equal(act3, pred3)
+n_count3 = 0
+for i in range(220):
+    if acc3[i] == True:
+        n_count3 = n_count3 + 1
+accuracy3 = n_count3/220*100
+accuracy3
+
+
+
+##################################################################################RF4
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L4_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+#train_Y변수
+test_y= df_test[['L4_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF4
+#모델링
+rclf4 = RandomForestClassifier(n_estimators=12)
+rclf4.fit(train_x, train_y)
+
+#예측
+pred4 = rclf4.predict(test_x).reshape(-1, 1)
+f4 = []
+for i4 in range(len(pred4)):
+    f4.append(pred4[i4,0])
+
+#예측정확도
+act4 = test_y.values[:, -1]
+act4 = act4.reshape(-1, 1)
+acc4 = np.equal(act4, pred4)
+n_count4 = 0
+for i in range(220):
+    if acc4[i] == True:
+        n_count4 = n_count4 + 1
+accuracy4 = n_count4/220*100
+accuracy4
+
+
+
+
+##################################################################################RF5
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L5_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP',  'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+for i4 in range(len(pred4)):
+    test_x['L4_Direction'][i4] = f4[i4]
+#train_Y변수
+test_y= df_test[['L5_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF5
+#모델링
+rclf5 = RandomForestClassifier(n_estimators=12)
+rclf5.fit(train_x, train_y)
+
+#예측
+pred5 = rclf5.predict(test_x).reshape(-1, 1)
+f5 = []
+for i5 in range(len(pred5)):
+    f5.append(pred5[i5,0])
+
+#예측정확도
+act5 = test_y.values[:, -1]
+act5 = act5.reshape(-1, 1)
+acc5 = np.equal(act5, pred5)
+n_count5 = 0
+for i in range(220):
+    if acc5[i] == True:
+        n_count5 = n_count5 + 1
+accuracy5 = n_count5/220*100
+accuracy5
+
+
+
+
+##################################################################################RF6
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L6_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP',  'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+for i4 in range(len(pred4)):
+    test_x['L4_Direction'][i4] = f4[i4]
+for i5 in range(len(pred5)):
+    test_x['L5_Direction'][i5] = f5[i5]
+#train_Y변수
+test_y= df_test[['L6_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF6
+#모델링
+rclf6 = RandomForestClassifier(n_estimators=12)
+rclf6.fit(train_x, train_y)
+
+#예측
+pred6 = rclf6.predict(test_x).reshape(-1, 1)
+f6 = []
+for i6 in range(len(pred6)):
+    f6.append(pred6[i6,0])
+
+#예측정확도
+act6 = test_y.values[:, -1]
+act6 = act6.reshape(-1, 1)
+acc6 = np.equal(act6, pred6)
+n_count6 = 0
+for i in range(220):
+    if acc6[i] == True:
+        n_count6 = n_count6 + 1
+accuracy6 = n_count6/220*100
+accuracy6
+
+
+
+
+##################################################################################RF6
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L7_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+for i4 in range(len(pred4)):
+    test_x['L4_Direction'][i4] = f4[i4]
+for i5 in range(len(pred5)):
+    test_x['L5_Direction'][i5] = f5[i5]
+for i6 in range(len(pred6)):
+    test_x['L6_Direction'][i6] = f6[i6]
+#train_Y변수
+test_y= df_test[['L7_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF7
+#모델링
+rclf7 = RandomForestClassifier(n_estimators=12)
+rclf7.fit(train_x, train_y)
+
+#예측
+pred7 = rclf7.predict(test_x).reshape(-1, 1)
+f7 = []
+for i7 in range(len(pred7)):
+    f7.append(pred7[i7,0])
+
+#예측정확도
+act7 = test_y.values[:, -1]
+act7 = act7.reshape(-1, 1)
+acc7 = np.equal(act7, pred7)
+n_count7 = 0
+for i in range(220):
+    if acc7[i] == True:
+        n_count7 = n_count7 + 1
+accuracy7 = n_count7/220*100
+accuracy7
+
+
+
+
+
+###############################accuracy
+
+print(accuracy1)
+print(accuracy2)
+print(accuracy3)
+print(accuracy4)
+print(accuracy5)
+print(accuracy6)
+print(accuracy7)
+
+
+###############################total_accuracy
+
+n_count = 0
+for i in range(220):
+    if acc1[i] == acc2[i] == acc3[i] == acc4[i] == acc5[i] == acc6[i] == acc7[i] == True:
+        n_count = n_count + 1
+total_accuracy = n_count/220*100
+total_accuracy
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------브라이틱스코드
+
+#
+#   NOTE : Enter "Out Table Alias"
+#   ex)
+#       inputDataframe = inputs[0]
+#       result = inputDataframe
+#
+import numpy as np
+import matplotlib.pyplot as plt
+#import tensorflow as tf
+import scipy.stats as stats
+import pandas as pd
+from itertools import combinations
+import statsmodels.api as sm
+from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.cross_validation import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+###########data가져오기
+#dataset = pd.read_csv('C:/Users/SDS/Documents/test/origindataforbrightics.csv',sep=',',header=0,skip_blank_lines=True)
+dataset = inputs[0]
+df = pd.DataFrame.dropna(dataset, axis=0, how='any')
+df
+###########data를 train과 test로 나누기
+df_train=df.sample(frac=0.8,random_state=200)
+df_test=df.drop(df_train.index)
+print(df_test.shape)
+print(df_train.shape)
+
+#OUTPUT___train통 df_train
+#OUTPUT___test통 df_test
+##################################################################################RF1
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP','L1_Direction', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L1_Direction']]
+#print(train_x)
+#print(train_y)
+###########Test dataset 구성
+
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP','L1_Direction', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+test_y= df_test[['L1_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF1
+#모델링
+rclf1 = RandomForestClassifier(n_estimators=12)
+rclf1.fit(train_x, train_y)
+
+#예측
+pred1 = rclf1.predict(test_x).reshape(-1, 1)
+f1 = []
+for i1 in range(len(pred1)):
+    f1.append(pred1[i1,0])
+
+#예측정확도
+act1 = test_y.values[:, -1]
+act1=act1.reshape(-1, 1)
+acc1 = np.equal(act1, pred1)
+n_count1 = 0
+for i in range(220):
+    if acc1[i] == True:
+        n_count1 = n_count1 + 1
+accuracy1 = n_count1/220*100
+accuracy1
+
+
+##################################################################################RF2
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L2_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L2_Direction', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+#train_Y변수
+test_y= df_test[['L2_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF2
+#모델링
+rclf2 = RandomForestClassifier(n_estimators=12)
+rclf2.fit(train_x, train_y)
+
+#예측
+pred2 = rclf2.predict(test_x).reshape(-1, 1)
+f2 = []
+for i2 in range(len(pred2)):
+    f2.append(pred2[i2,0])
+
+#예측정확도
+act2 = test_y.values[:, -1]
+act2=act2.reshape(-1, 1)
+acc2 = np.equal(act2, pred2)
+n_count2 = 0
+for i in range(220):
+    if acc2[i] == True:
+        n_count2 = n_count2 + 1
+accuracy2 = n_count2/220*100
+accuracy2
+
+
+
+##################################################################################RF3
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L3_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L3_Direction', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+#train_Y변수
+test_y= df_test[['L3_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF3
+#모델링
+rclf3 = RandomForestClassifier(n_estimators=12)
+rclf3.fit(train_x, train_y)
+
+#예측
+pred3 = rclf3.predict(test_x).reshape(-1, 1)
+f3 = []
+for i3 in range(len(pred3)):
+    f3.append(pred3[i3,0])
+
+#예측정확도
+act3 = test_y.values[:, -1]
+act3=act3.reshape(-1, 1)
+acc3 = np.equal(act3, pred3)
+n_count3 = 0
+for i in range(220):
+    if acc3[i] == True:
+        n_count3 = n_count3 + 1
+accuracy3 = n_count3/220*100
+accuracy3
+
+
+
+##################################################################################RF4
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L4_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L4_Direction', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+#train_Y변수
+test_y= df_test[['L4_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF4
+#모델링
+rclf4 = RandomForestClassifier(n_estimators=12)
+rclf4.fit(train_x, train_y)
+
+#예측
+pred4 = rclf4.predict(test_x).reshape(-1, 1)
+f4 = []
+for i4 in range(len(pred4)):
+    f4.append(pred4[i4,0])
+
+#예측정확도
+act4 = test_y.values[:, -1]
+act4 = act4.reshape(-1, 1)
+acc4 = np.equal(act4, pred4)
+n_count4 = 0
+for i in range(220):
+    if acc4[i] == True:
+        n_count4 = n_count4 + 1
+accuracy4 = n_count4/220*100
+accuracy4
+
+
+
+
+##################################################################################RF5
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L5_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP',  'L5_Direction', 'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+for i4 in range(len(pred4)):
+    test_x['L4_Direction'][i4] = f4[i4]
+#train_Y변수
+test_y= df_test[['L5_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF5
+#모델링
+rclf5 = RandomForestClassifier(n_estimators=12)
+rclf5.fit(train_x, train_y)
+
+#예측
+pred5 = rclf5.predict(test_x).reshape(-1, 1)
+f5 = []
+for i5 in range(len(pred5)):
+    f5.append(pred5[i5,0])
+
+#예측정확도
+act5 = test_y.values[:, -1]
+act5 = act5.reshape(-1, 1)
+acc5 = np.equal(act5, pred5)
+n_count5 = 0
+for i in range(220):
+    if acc5[i] == True:
+        n_count5 = n_count5 + 1
+accuracy5 = n_count5/220*100
+accuracy5
+
+
+
+
+##################################################################################RF6
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L6_Direction', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L6_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP',  'L6_Direction', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+for i4 in range(len(pred4)):
+    test_x['L4_Direction'][i4] = f4[i4]
+for i5 in range(len(pred5)):
+    test_x['L5_Direction'][i5] = f5[i5]
+#train_Y변수
+test_y= df_test[['L6_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF6
+#모델링
+rclf6 = RandomForestClassifier(n_estimators=12)
+rclf6.fit(train_x, train_y)
+
+#예측
+pred6 = rclf6.predict(test_x).reshape(-1, 1)
+f6 = []
+for i6 in range(len(pred6)):
+    f6.append(pred6[i6,0])
+
+#예측정확도
+act6 = test_y.values[:, -1]
+act6 = act6.reshape(-1, 1)
+acc6 = np.equal(act6, pred6)
+n_count6 = 0
+for i in range(220):
+    if acc6[i] == True:
+        n_count6 = n_count6 + 1
+accuracy6 = n_count6/220*100
+accuracy6
+
+
+
+
+##################################################################################RF6
+###########Train dataset 구성
+
+#train_X변수
+train_x= df_train.drop(['L1_S1_MP', 'L7_Direction'], axis=1)
+#train_Y변수
+train_y= df_train[['L7_Direction']]
+#print(train_x)
+#print(train_y)
+
+###########Test dataset 구성
+#test_X변수
+test_x= df_test.drop(['L1_S1_MP', 'L7_Direction'], axis=1)
+for i1 in range(len(pred1)):
+    test_x['L1_Direction'][i1] = f1[i1]
+for i2 in range(len(pred2)):
+    test_x['L2_Direction'][i2] = f2[i2]
+for i3 in range(len(pred3)):
+    test_x['L3_Direction'][i3] = f3[i3]
+for i4 in range(len(pred4)):
+    test_x['L4_Direction'][i4] = f4[i4]
+for i5 in range(len(pred5)):
+    test_x['L5_Direction'][i5] = f5[i5]
+for i6 in range(len(pred6)):
+    test_x['L6_Direction'][i6] = f6[i6]
+#train_Y변수
+test_y= df_test[['L7_Direction']]
+#print(test_x )
+#print(test_y)
+
+print(train_x.shape)
+print(train_y.shape)
+print(test_x.shape)
+print(test_y.shape)
+
+
+
+########RF7
+#모델링
+rclf7 = RandomForestClassifier(n_estimators=12)
+rclf7.fit(train_x, train_y)
+
+#예측
+pred7 = rclf7.predict(test_x).reshape(-1, 1)
+f7 = []
+for i7 in range(len(pred7)):
+    f7.append(pred7[i7,0])
+
+#예측정확도
+act7 = test_y.values[:, -1]
+act7 = act7.reshape(-1, 1)
+acc7 = np.equal(act7, pred7)
+n_count7 = 0
+for i in range(220):
+    if acc7[i] == True:
+        n_count7 = n_count7 + 1
+accuracy7 = n_count7/220*100
+accuracy7
+
+
+
+
+
+
+###############################total_accuracy
+
+n_count = 0
+for i in range(220):
+    if acc1[i] == acc2[i] == acc3[i] == acc4[i] == acc5[i] == acc6[i] == acc7[i] == True:
+        n_count = n_count + 1
+total_accuracy = n_count/220*100
+total_accuracy
+
+
+result=pd.DataFrame([['total_accuracy',total_accuracy]])
+result.columns=['Lens','accuracy']
+
